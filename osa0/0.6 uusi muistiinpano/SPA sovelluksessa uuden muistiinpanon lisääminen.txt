@@ -1,0 +1,11 @@
+title SPA sovelluksessa uuden muistiinpanon lisääminen
+
+note over selain:
+Muistiinpano lisätään selaimen paikallisiin muistiinpanoihin 
+ja renderöidään näytölle uudestaan.
+Sen jälkeen uusi muistiinpano läheteään JSON muodossa palvelimelle:
+end note
+
+selain->palvelin: HTTP POST https://fullstack-exampleapp.herokuapp.com/new_note_spa
+palvelin-->selain: HTTP status "201 created"
+
