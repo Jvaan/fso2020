@@ -9,13 +9,14 @@ const Button = ({ handleClick, text }) => (
   </button>
 )
 
-const StatisticResult = ({ label, resultValue }) => <div>{label} {resultValue}</div>
+const StatisticLine = ({ text, value }) => <tr><td>{text}</td><td>{value}</td></tr>
 
 const Statistics = ({ header, good, neutral, bad }) => {
 
   let all = good + neutral + bad
   let average = ((good * 1) + (neutral * 0) + (bad * -1)) / all
-  let positivePercentage = (good / all) * 100
+  let positiveNum = (good / all) * 100
+  let positiveString = positiveNum.toString() + " %"
 
   if (all === 0) {
     return (
@@ -28,12 +29,16 @@ const Statistics = ({ header, good, neutral, bad }) => {
     return (
       <div>
         <Header text={header} />
-        <StatisticResult label="good" resultValue={good} />
-        <StatisticResult label="neutral" resultValue={neutral} />
-        <StatisticResult label="bad" resultValue={bad} />
-        <div>All {all}</div>
-        <div>Average {average}</div>
-        <div>Positive {positivePercentage} %</div>
+        <table>
+          <tbody>
+            <StatisticLine text="Good" value={good} />
+            <StatisticLine text="Neutral" value={neutral} />
+            <StatisticLine text="Bad" value={bad} />
+            <StatisticLine text="All" value={all} />
+            <StatisticLine text="Average" value={average} />
+            <StatisticLine text="Positive" value={positiveString} />
+          </tbody>
+        </table>
       </div>
     )
 }
