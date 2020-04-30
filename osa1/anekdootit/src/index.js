@@ -1,12 +1,36 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
+const Header = ({ text }) => <h1>{text}</h1>
+
 const Button = ({ handleClick, text }) => <button onClick={handleClick}>{text}</button>
 
 const GetRandomNum = (maxNum) => {
   let randomNum = Math.floor(Math.random() * Math.floor(maxNum))
   console.log("random #: ", randomNum)
   return randomNum
+}
+
+const AnecdoteWithMostVotes = ({ allVotes, anecdotes }) => {
+  // Find most votes from array
+  let maxValue = Math.max(...allVotes);
+  let anecdoteWithMaxValue = 0
+
+  // find first index which has most votes
+  for (let i = 0; i < allVotes.length; i++) {
+    if (allVotes[i] === maxValue) {
+      anecdoteWithMaxValue = i
+      break
+    }
+  }
+
+  return (
+    <div>
+      <Header text="Anecdote with most votes" />
+      <div>{anecdotes[anecdoteWithMaxValue]}</div>
+      <div>Has {maxValue} votes</div>
+    </div>
+  )
 }
 
 const App = (props) => {
@@ -26,10 +50,14 @@ const App = (props) => {
 
   return (
     <div>
+      <Header text="Anecdote of the day" />
       <div> {props.anecdotes[selectedAnecdote]}</div>
-      <div>Votes {allAnecdoteVotes[selectedAnecdote]}</div>
+      <div>Has {allAnecdoteVotes[selectedAnecdote]} votes</div>
+
       <Button handleClick={handleVoteButton} text="Vote" />
       <Button handleClick={handleGetRandomAnecdoteButton} text="Get random anecdote" />
+
+      <AnecdoteWithMostVotes allVotes={allAnecdoteVotes} anecdotes={props.anecdotes} />
     </div>
   )
 }
