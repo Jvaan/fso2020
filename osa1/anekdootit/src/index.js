@@ -3,24 +3,38 @@ import ReactDOM from 'react-dom'
 
 const Button = ({ handleClick, text }) => <button onClick={handleClick}>{text}</button>
 
-const GetRandomAnecdoteNum = () => {
-  let randomNum = Math.floor(Math.random() * Math.floor(anecdotes.length))
+const GetRandomNum = (maxNum) => {
+  let randomNum = Math.floor(Math.random() * Math.floor(maxNum))
   console.log("random #: ", randomNum)
   return randomNum
 }
 
 const App = (props) => {
-  const [selected, setSelected] = useState(0)
+  const [selectedAnecdote, setSelected] = useState(0)
+  // initialize hook array with zeroes, length comes from anecdotes.length
+  const [allAnecdoteVotes, setAllAnecdoteVotes] = useState(Array.apply(null, new Array(props.anecdotes.length)).map(Number.prototype.valueOf, 0))
+
+  const handleVoteButton = () => {
+    const copyVotes = [...allAnecdoteVotes]
+    copyVotes[selectedAnecdote] += 1
+    setAllAnecdoteVotes(copyVotes)
+  }
+
+  const handleGetRandomAnecdoteButton = () => {
+    setSelected(GetRandomNum(props.anecdotes.length))
+  }
 
   return (
     <div>
-      <div> {props.anecdotes[selected]}</div>
-      <Button handleClick={() => setSelected(GetRandomAnecdoteNum())} text="Get random anecdote" />
+      <div> {props.anecdotes[selectedAnecdote]}</div>
+      <div>Votes {allAnecdoteVotes[selectedAnecdote]}</div>
+      <Button handleClick={handleVoteButton} text="Vote" />
+      <Button handleClick={handleGetRandomAnecdoteButton} text="Get random anecdote" />
     </div>
   )
 }
 
-const anecdotes = [
+const Anecdotes = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
   'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
@@ -30,6 +44,6 @@ const anecdotes = [
 ]
 
 ReactDOM.render(
-  <App anecdotes={anecdotes} />,
+  <App anecdotes={Anecdotes} />,
   document.getElementById('root')
 )
