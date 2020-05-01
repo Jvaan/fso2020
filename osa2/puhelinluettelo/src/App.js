@@ -3,12 +3,20 @@ import Person from './components/Person'
 
 const App = () => {
     const [persons, setPersons] = useState([
-        { name: 'Arto Hellas' }
+        {
+            name: 'Arto Hellas',
+            id: 'Arto Hellas'
+        }
     ])
     const [newName, setNewName] = useState('')
 
     const addName = (event) => {
         event.preventDefault()
+
+        if (persons.findIndex((person) => person.name === newName) >= 0) {
+            alert(`${newName} is already added to phonebook`)
+            return
+        }
 
         const personObject = {
             name: newName,
@@ -38,7 +46,7 @@ const App = () => {
             <h2>Numbers</h2>
             <ul>
                 {persons.map((person) =>
-                    <Person key={person.name} person={person} />
+                    <Person key={person.id} person={person} />
                 )}
             </ul>
         </div>
