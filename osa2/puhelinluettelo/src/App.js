@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
-import axios from 'axios'
+import PersonData from './services/PersonData'
 
 const App = () => {
     const [persons, setPersons] = useState([])
@@ -35,9 +35,17 @@ const App = () => {
             number: newNumber
         }
 
-        setPersons(persons.concat(personObject))
-        setNewName('')
-        setNewNumber('')
+        PersonData
+            .addPerson(personObject)
+            .then(responseData => {
+                console.log('person added')
+                setPersons(persons.concat(responseData))
+                setNewName('')
+                setNewNumber('')
+            })
+            .catch(error => {
+                alert("Failed adding new person\n" + error)
+            })   
     }
 
     const handleNameChange = (event) => {
@@ -60,13 +68,17 @@ const App = () => {
 
     useEffect(() => {
         console.log('effect')
-        axios
-          .get('http://localhost:3001/persons')
-          .then(response => {
-            console.log('promise fulfilled')
-            setPersons(response.data)
-          })
-      }, [])
+        PersonData
+            .getAll()
+            .then(responseData => {
+                console.log('get all persons ok')
+                setPersons(responseData)
+            })
+            .catch(error => {
+                alert(error + "\nDid you remember to start json server (npm run server)?")
+            })
+
+    }, [])
 
     return (
         <div>
