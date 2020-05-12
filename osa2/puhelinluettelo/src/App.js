@@ -45,7 +45,7 @@ const App = () => {
             })
             .catch(error => {
                 alert("Failed adding new person\n" + error)
-            })   
+            })
     }
 
     const handleNameChange = (event) => {
@@ -63,11 +63,26 @@ const App = () => {
         setNewFilter(event.target.value)
     }
 
+    const handleDelete = (person) => {
+        if (window.confirm(`Really delete ${person.name}?`)) {
+            console.log(`Deleting ${person.name}`)
+            PersonData
+                .deletePerson(person)
+                .then(responseData => {
+                    console.log('person deleted')
+                    updatePersons()
+                })
+                .catch(error => {
+                    alert("Failed deleting person\n" + error)
+                })
+        }
+
+    }
+
     let isPerson = (person) => person.name.toLowerCase().match(newFilter.toLowerCase())
     const personsToShow = persons.filter(isPerson)
 
-    useEffect(() => {
-        console.log('effect')
+    const updatePersons = () => {
         PersonData
             .getAll()
             .then(responseData => {
@@ -77,7 +92,11 @@ const App = () => {
             .catch(error => {
                 alert(error + "\nDid you remember to start json server (npm run server)?")
             })
+    }
 
+    useEffect(() => {
+        console.log('effect')
+        updatePersons()
     }, [])
 
     return (
@@ -87,7 +106,7 @@ const App = () => {
             <h3>Add a new</h3>
             <PersonForm name={newName} number={newNumber} nameHandler={handleNameChange} numberHandler={handleNumberChange} addNameHandler={addName} />
             <h3>Numbers</h3>
-            <Persons persons={personsToShow} />
+            <Persons persons={personsToShow} handleDelete={handleDelete} />
         </div>
     )
 }
