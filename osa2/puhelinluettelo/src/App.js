@@ -13,11 +13,13 @@ const App = () => {
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [newFilter, setNewFilter] = useState('')
-    const [notification, setNotification] = useState({message: null, className : null})
+    const [notification, setNotification] = useState({ message: null, className: null })
 
     const showNotification = (message, className) => {
-        const newNotification = { message: message, className: className}
-        const emptyNotification = { message: null, className: null}
+        const newNotification = { message: message, className: className }
+        const emptyNotification = { message: null, className: null }
+
+        console.log(className, message)
 
         setNotification(newNotification)
         setTimeout(() => {
@@ -36,11 +38,17 @@ const App = () => {
                 showNotification(`Updated ${responseData.name}`, classNameInformation)
             })
             .catch(error => {
-                showNotification("Failed updating person\n" + error, classNameError)
+                if (error.response.status === 404) {
+                    showNotification(`Failed updating person. ${person.name} has already been deleted from the server.`, classNameError)
+                } else {
+                    showNotification(`Failed updating person. ${error.message}`, classNameError)
+                }
+                updatePersons()
             })
     }
 
     const addPerson = (person) => {
+
         PersonData
             .addPerson(person)
             .then(responseData => {
@@ -51,7 +59,7 @@ const App = () => {
                 showNotification(`Added ${responseData.name}`, classNameInformation)
             })
             .catch(error => {
-                showNotification("Failed adding new person\n" + error)
+                showNotification(`Failed adding new person. ${error.message}`, classNameError)
             })
     }
 
@@ -60,12 +68,12 @@ const App = () => {
         event.preventDefault()
 
         if (!newName) {
-            showNotification("Name is mandatory", classNameError)
+            showNotification("Name is mandatory.", classNameError)
             return
         }
 
         if (!newNumber) {
-            showNotification("Number is mandatory", classNameError)
+            showNotification("Number is mandatory.", classNameError)
             return
         }
 
@@ -88,6 +96,27 @@ const App = () => {
         addPerson(newPersonObject)
     }
 
+    const handleDelete = (person) => {
+        if (window.confirm(`Really delete ${person.name}?`)) {
+            console.log(`Deleting ${person.name}`)
+            PersonData
+                .deletePerson(person)
+                .then(responseData => {
+                    console.log('person deleted')
+                    updatePersons()
+                    showNotification(`Deleted ${person.name}`, classNameInformation)
+                })
+                .catch(error => {
+                    if (error.response.status === 404) {
+                        showNotification(`Failed deleting person. ${person.name} has already been deleted from the server.`, classNameError)
+                    } else {
+                        showNotification(`Failed deleting person. ${error.message}`, classNameError)
+                    }
+                    updatePersons()
+                })
+        }
+    }
+
     const handleNameChange = (event) => {
         console.log(event.target.value)
         setNewName(event.target.value)
@@ -101,22 +130,6 @@ const App = () => {
     const handleFilterChange = (event) => {
         console.log(event.target.value)
         setNewFilter(event.target.value)
-    }
-
-    const handleDelete = (person) => {
-        if (window.confirm(`Really delete ${person.name}?`)) {
-            console.log(`Deleting ${person.name}`)
-            PersonData
-                .deletePerson(person)
-                .then(responseData => {
-                    console.log('person deleted')
-                    updatePersons()
-                    showNotification(`Deleted ${person.name}`, classNameInformation)
-                })
-                .catch(error => {
-                    showNotification("Failed deleting person\n" + error, classNameError)
-                })
-        }
     }
 
     let isPerson = (person) => person.name.toLowerCase().match(newFilter.toLowerCase())
