@@ -3,12 +3,27 @@ import Filter from './components/Filter'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
 import PersonData from './services/PersonData'
+import Notification from './components/Notification'
+
+const classNameError = 'error'
+const classNameInformation = 'information'
 
 const App = () => {
     const [persons, setPersons] = useState([])
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [newFilter, setNewFilter] = useState('')
+    const [notification, setNotification] = useState({message: null, className : null})
+
+    const showNotification = (message, className) => {
+        const newNotification = { message: message, className: className}
+        const emptyNotification = { message: null, className: null}
+
+        setNotification(newNotification)
+        setTimeout(() => {
+            setNotification(emptyNotification)
+        }, 5000)
+    }
 
     const updatePerson = (person) => {
         PersonData
@@ -18,9 +33,10 @@ const App = () => {
                 setPersons(persons.map(p => p.id !== person.id ? p : responseData))
                 setNewName('')
                 setNewNumber('')
+                showNotification(`Updated ${responseData.name}`, classNameInformation)
             })
             .catch(error => {
-                alert("Failed updating person\n" + error)
+                showNotification("Failed updating person\n" + error, classNameError)
             })
     }
 
@@ -32,9 +48,10 @@ const App = () => {
                 setPersons(persons.concat(responseData))
                 setNewName('')
                 setNewNumber('')
+                showNotification(`Added ${responseData.name}`, classNameInformation)
             })
             .catch(error => {
-                alert("Failed adding new person\n" + error)
+                showNotification("Failed adding new person\n" + error)
             })
     }
 
@@ -43,12 +60,12 @@ const App = () => {
         event.preventDefault()
 
         if (!newName) {
-            alert(`Name is mandatory`)
+            showNotification("Name is mandatory", classNameError)
             return
         }
 
         if (!newNumber) {
-            alert(`Number is mandatory`)
+            showNotification("Number is mandatory", classNameError)
             return
         }
 
@@ -59,15 +76,15 @@ const App = () => {
             let changedPerson = { ...foundPerson, number: newNumber }
             if (window.confirm(`${changedPerson.name} is already added to phonebook, replace the old number with new one?`)) {
                 updatePerson(changedPerson)
-                return
             }
+            return
         }
-        
+
         // Adding new person (id is generated on server side)
         const newPersonObject = {
             name: newName,
             number: newNumber
-          }
+        }
         addPerson(newPersonObject)
     }
 
@@ -94,12 +111,12 @@ const App = () => {
                 .then(responseData => {
                     console.log('person deleted')
                     updatePersons()
+                    showNotification(`Deleted ${person.name}`, classNameInformation)
                 })
                 .catch(error => {
-                    alert("Failed deleting person\n" + error)
+                    showNotification("Failed deleting person\n" + error, classNameError)
                 })
         }
-
     }
 
     let isPerson = (person) => person.name.toLowerCase().match(newFilter.toLowerCase())
@@ -125,6 +142,7 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
+            <Notification notification={notification} />
             <Filter value={newFilter} onChange={handleFilterChange} />
             <h3>Add a new</h3>
             <PersonForm name={newName} number={newNumber} nameHandler={handleNameChange} numberHandler={handleNumberChange} addNameHandler={handleAddPerson} />
