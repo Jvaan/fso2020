@@ -10,7 +10,35 @@ const App = () => {
     const [newNumber, setNewNumber] = useState('')
     const [newFilter, setNewFilter] = useState('')
 
-    const addName = (event) => {
+    const updatePerson = (person) => {
+        PersonData
+            .updatePerson(person)
+            .then(responseData => {
+                console.log('person updated')
+                setPersons(persons.map(p => p.id !== person.id ? p : responseData))
+                setNewName('')
+                setNewNumber('')
+            })
+            .catch(error => {
+                alert("Failed updating person\n" + error)
+            })
+    }
+
+    const addPerson = (person) => {
+        PersonData
+            .addPerson(person)
+            .then(responseData => {
+                console.log('person added')
+                setPersons(persons.concat(responseData))
+                setNewName('')
+                setNewNumber('')
+            })
+            .catch(error => {
+                alert("Failed adding new person\n" + error)
+            })
+    }
+
+    const handleAddPerson = (event) => {
         console.log(`Adding new name ${newName}`)
         event.preventDefault()
 
@@ -24,28 +52,23 @@ const App = () => {
             return
         }
 
-        if (persons.findIndex((person) => person.name === newName) >= 0) {
-            alert(`${newName} is already added to phonebook`)
-            return
-        }
+        const foundPerson = persons.find(p => p.name === newName)
 
-        const personObject = {
+        // Updating existing person
+        if (foundPerson) {
+            let changedPerson = { ...foundPerson, number: newNumber }
+            if (window.confirm(`${changedPerson.name} is already added to phonebook, replace the old number with new one?`)) {
+                updatePerson(changedPerson)
+                return
+            }
+        }
+        
+        // Adding new person (id is generated on server side)
+        const newPersonObject = {
             name: newName,
-            id: newName,
             number: newNumber
-        }
-
-        PersonData
-            .addPerson(personObject)
-            .then(responseData => {
-                console.log('person added')
-                setPersons(persons.concat(responseData))
-                setNewName('')
-                setNewNumber('')
-            })
-            .catch(error => {
-                alert("Failed adding new person\n" + error)
-            })
+          }
+        addPerson(newPersonObject)
     }
 
     const handleNameChange = (event) => {
@@ -104,7 +127,7 @@ const App = () => {
             <h2>Phonebook</h2>
             <Filter value={newFilter} onChange={handleFilterChange} />
             <h3>Add a new</h3>
-            <PersonForm name={newName} number={newNumber} nameHandler={handleNameChange} numberHandler={handleNumberChange} addNameHandler={addName} />
+            <PersonForm name={newName} number={newNumber} nameHandler={handleNameChange} numberHandler={handleNumberChange} addNameHandler={handleAddPerson} />
             <h3>Numbers</h3>
             <Persons persons={personsToShow} handleDelete={handleDelete} />
         </div>
