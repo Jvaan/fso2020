@@ -14,6 +14,10 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:ui": "rmdir build /S /Q && cd ..\\..\\osa2\\puhelinluettelo && npm run build --prod && xcopy /E /S /Y build ..\\..\\..\\fso2020_osa3\\build\\",
+    "deploy": "git push heroku master",
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push && npm run deploy",
+    "logs:prod": "heroku logs --tail",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "json-server -p3001 --watch db.json"
@@ -35,5 +39,6 @@
   },
   "devDependencies": {
     "json-server": "^0.16.1"
-  }
+  },
+  "proxy": "http://localhost:3001"
 }
