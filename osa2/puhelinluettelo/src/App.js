@@ -59,7 +59,8 @@ const App = () => {
                 showNotification(`Added ${responseData.name}`, classNameInformation)
             })
             .catch(error => {
-                showNotification(`Failed adding new person. ${error.message}`, classNameError)
+                console.log(error.response.data)
+                showNotification(`Failed adding new person. ${error.response.data.error}`, classNameError)
             })
     }
 
