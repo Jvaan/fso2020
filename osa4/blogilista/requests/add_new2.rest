@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+        "author": "Alexander Trivedi",
+        "title": "Aitoa kotiruokaa",
+        "url": "https://www.blogit.fi/aitoa-arkiruokaa",
+        "votes": "0"
+}

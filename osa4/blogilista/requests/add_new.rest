@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+        "author": "Tom Belskie",
+        "title": "Bloggers Who Blog About Blogging",
+        "url": "https://medium.com/tom-thoughts/bloggers-who-blog-about-blogging-33a376b4a8e8",
+        "votes": "0"
+}
