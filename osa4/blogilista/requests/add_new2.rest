@@ -5,5 +5,5 @@ Content-Type: application/json
         "author": "Alexander Trivedi",
         "title": "Aitoa kotiruokaa",
         "url": "https://www.blogit.fi/aitoa-arkiruokaa",
-        "votes": "0"
+        "likes": "0"
 }
